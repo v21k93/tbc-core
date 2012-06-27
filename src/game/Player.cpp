@@ -10804,6 +10804,16 @@ void Player::QuickEquipItem(uint16 pos, Item *pItem)
     }
 }
 
+
+Bag* Player::GetBagByPos(uint8 bag) const
+{
+    if ((bag >= INVENTORY_SLOT_BAG_START && bag < INVENTORY_SLOT_BAG_END)
+        || (bag >= BANK_SLOT_BAG_START && bag < BANK_SLOT_BAG_END))
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, bag))
+            return item->ToBag();
+    return NULL;
+}
+
 void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
     // PLAYER_VISIBLE_ITEM_i_CREATOR    // Size: 2
@@ -10820,7 +10830,20 @@ void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
         SetUInt64Value(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetUInt64Value(ITEM_FIELD_CREATOR));
 
         int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET);
-        SetUInt32Value(VisibleBase + 0, pItem->GetEntry());
+		
+		 // custom
+		if(pItem->FakeEntry && pItem->FakeOwner == GetGUIDLow())
+			SetUInt32Value(VisibleBase + 0, pItem->FakeEntry);
+		else
+		{
+			if(pItem->FakeEntry || pItem->FakeOwner)
+			{
+				CharacterDatabase.PExecute("UPDATE item_instance SET FakeEntry = 0, FakeOwner = 0 WHERE guid = %u", pItem->GetGUIDLow());
+				pItem->FakeEntry = NULL;
+				pItem->FakeOwner = NULL;
+			}
+			 SetUInt32Value(VisibleBase + 0, pItem->GetEntry());
+		}
 
         for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
             SetUInt32Value(VisibleBase + 1 + i, pItem->GetEnchantmentId(EnchantmentSlot(i)));
@@ -15356,6 +15379,9 @@ void Player::_LoadInventory(QueryResult_AutoPtr result, uint32 timediff)
             }
 
             Item *item = NewItemOrBag(proto);
+			
+			item->FakeEntry = fields[5].GetUInt32(); // custom
+			item->FakeOwner = fields[6].GetUInt32(); // custom
 
             if (!item->LoadFromDB(item_guid, GetGUID(), result))
             {

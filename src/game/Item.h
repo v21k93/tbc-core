@@ -223,6 +223,9 @@ class Item : public Object
         bool CanBeTraded() const;
         void SetInTrade(bool b = true) { mb_in_trade = b; }
         bool IsInTrade() const { return mb_in_trade; }
+		
+		Bag* ToBag() { if (IsBag()) return reinterpret_cast<Bag*>(this); else return NULL; }
+        const Bag* ToBag() const { if (IsBag()) return reinterpret_cast<const Bag*>(this); else return NULL; }
 
         bool IsFitToSpellRequirements(SpellEntry const* spellInfo) const;
         bool IsLimitedToAnotherMapOrZone(uint32 cur_mapId, uint32 cur_zoneId) const;
@@ -291,6 +294,9 @@ class Item : public Object
         bool hasInvolvedQuest(uint32 /*quest_id*/) const { return false; }
 
         void BuildUpdate(UpdateDataMapType& );
+		
+		uint32 FakeOwner; // custom
+		uint32 FakeEntry; // custom
 
     private:
         uint8 m_slot;

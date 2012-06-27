@@ -136,6 +136,12 @@ enum ActionButtonUpdateState
     ACTIONBUTTON_DELETED   = 3
 };
 
+enum CurrencyTokenSlots                                     // 32 slots
+{
+    CURRENCYTOKEN_SLOT_START    = 118,
+    CURRENCYTOKEN_SLOT_END      = 150
+};
+
 struct ActionButton
 {
     ActionButton() : action(0), type(0), misc(0), uState(ACTIONBUTTON_NEW) {}
@@ -995,6 +1001,7 @@ class Player : public Unit, public GridObject<Player>
         Item* GetItemByGuid(uint64 guid) const;
         Item* GetItemByPos(uint16 pos) const;
         Item* GetItemByPos(uint8 bag, uint8 slot) const;
+		Bag*  GetBagByPos(uint8 slot) const;		
         Item* GetWeaponForAttack(WeaponAttackType attackType, bool useable = false) const;
         Item* GetShield(bool useable = false) const;
         static uint32 GetAttackBySlot(uint8 slot);        // MAX_ATTACK if not weapon slot
