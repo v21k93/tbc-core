@@ -1,0 +1,36 @@
+- Removed Sickness 
+- Fully working Line of Sight for pure PVP and PVE
+- Portals in every Capital City
+- Strict Names for easy typing
+- All Flight Paths to reach easily any point
+- Always Max Skill
+- Prospecting Skillup
+- Event Announce
+- You can chat in channels, add as friend and trade with your friends in other faction
+- Rates for Drop:
+	* Poor: x1
+	* Normal: x15
+	* Uncommon: x15
+	* Epic: x15
+	* Legendary: x15
+	* Artifact: x15 
+	* Items: x15
+	* Money: x15
+- Rates for XP:
+	* Kill: x15
+	* Quest: x25
+	* Explore: x20
+- Rates for Reputation: x15
+- Skills Gain (Crafting, Defense, Gathering, Weapon): x2
+- Skill Chance:
+	* Orange: 100%
+	* Yellow: 100%
+	* Green: 75%
+	* Grey: 0%
+- Not Casting Deserter spell at player who leave battleground in progress
+- Battleground and Arena announcer to players who are quering
+- Arena Points are flushing automatically every 2 days
+- 2 honor points for duel winner after a duel
+- Announce for first player login
+- Installed Most Powerful Anticheat System
+	

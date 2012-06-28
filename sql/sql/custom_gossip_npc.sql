@@ -1,0 +1,3 @@
+DELETE FROM `quest_template` WHERE (`entry`='30001');
+
+INSERT INTO `creature_template` (`entry`, `modelid_A`, `modelid_H`, `name`, `subname`, `minhealth`, `maxhealth`, `minmana`, `maxmana`, `armor`, `faction_A`, `faction_H`, `npcflag`, `mindmg`, `maxdmg`, `unit_flags`, `class`, `race`, `ScriptName`) VALUES ('30001', '11045', '18148', 'Custom Gossip', 'Custom NPC', '100', '120', '100', '200', '200', '35', '35', '3', '100', '1000', '2', '2', '1', 'custom_gossip_codebox');

@@ -1,0 +1,14 @@
+DELETE FROM `quest_template` WHERE (`entry`='30000');
+DELETE FROM `creature_template` WHERE (`entry`='30000');
+DELETE FROM `creature_involvedrelation` WHERE (`id`='30000');
+DELETE FROM `creature_questrelation` WHERE (`id`='30000');
+
+INSERT INTO `creature_template` (`entry`, `modelid_A`, `modelid_H`, `name`, `subname`, `minhealth`, `maxhealth`, `minmana`, `maxmana`, `armor`, `faction_A`, `faction_H`, `npcflag`, `mindmg`, `maxdmg`, `unit_flags`, `class`, `race`) VALUES ('30000', '11045', '18148', 'Cheery', 'Welcome NPC', '100', '120', '100', '200', '200', '35', '35', '3', '100', '1000', '2', '2', '1');
+INSERT INTO `quest_template` (`entry`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `EndText`, `RewItemId1`, `RewItemId2`, `RewOrReqMoney`, `RewMoneyMaxLevel`) VALUES ('30000', 'Welcome To Cheer World', '', '', 'This items can help you in your adventure.', 'Good Luck and Have Fun in Cheer World !', '23720', '', '10000', '10000');
+UPDATE `quest_template` SET `RewChoiceItemId1`='13583', `RewChoiceItemId2`='22114', `RewChoiceItemId3`='33154', `RewChoiceItemId4`='32616' WHERE (`entry`='30000');
+UPDATE `quest_template` SET `RewChoiceItemCount1`='1', `RewChoiceItemCount2`='1', `RewChoiceItemCount3`='1', `RewChoiceItemCount4`='1' WHERE (`entry`='30000');
+UPDATE `quest_template` SET `RewItemCount1`='1', `RewItemCount2`='' WHERE (`entry`='30000');
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES ('30000', '30000');
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('30000', '30000');
+UPDATE `quest_template` SET `QuestLevel`='-70' WHERE (`entry`='30000');
+UPDATE `quest_template` SET `Details`='Hello $N and welcome to Cheer World! Fully Working 2.4.3 Realm !$BThis is our advantages:$B- Removed Sickness $B- Fully working Line of Sight for pure PVP and PVE$B- Portals in every Capital City$B- Strict Names for easy typing$B- All Flight Paths to reach easily any point$B- Always Max Skill$B- Prospecting Skillup$B- Event Announce$B- You can chat in channels, add as friend and trade with your friends in other faction$B- Rates for Drop:$B    * Poor: x1$B    * Normal: x15$B    * Uncommon: x15$B    * Epic: x15$B    * Legendary: x15$B    * Artifact: x15$B    * Money: x15$B- Rates for XP:$B    * Kill: x15$B    * Quest: x25$B    * Explore: x20$B- Rates for Reputation: x15$B- Skills Gain (Crafting, Defense, Gathering, Weapon): x2$B- Skill Chance:$B    * Orange: 100%$B    * Yellow: 100%$B    * Green: 75%$B    * Grey: 0%$B- Not Casting Deserter spell at player who leave battleground in progress$B- Battleground and Arena announcer to players who are quering$B- Arena Points are flushing automatically every 2 days$B- 2 honor points for duel winner after a duel$B- Announce for first player login$B- Installed Most Powerful Anticheat System$B' WHERE (`entry`='30000');
