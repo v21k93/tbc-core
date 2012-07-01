@@ -68,7 +68,6 @@ struct boss_supremusAI : public ScriptedAI
     uint32 SummonVolcanoTimer;
     uint32 HatefulStrikeTimer;
     uint32 BerserkTimer;
-	uint32 KillingTimer;
 
     bool Phase1;
 
@@ -90,7 +89,6 @@ struct boss_supremusAI : public ScriptedAI
         PhaseSwitchTimer = 60000;
         SummonVolcanoTimer = 5000;
         BerserkTimer = 900000;                              // 15 minute enrage
-		KillingTimer = 0;
 
         Phase1 = true;
         summons.DespawnAll();
@@ -123,10 +121,6 @@ struct boss_supremusAI : public ScriptedAI
             pInstance->SetData(DATA_SUPREMUSEVENT, DONE);
             ToggleDoors(false);
         }
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
         summons.DespawnAll();
     }
 
@@ -167,8 +161,6 @@ struct boss_supremusAI : public ScriptedAI
                 DoCast(me, SPELL_BERSERK);
             else BerserkTimer -= diff;
         }
-		
-		KillingTimer += diff;
 
         if (SummonFlameTimer <= diff)
         {

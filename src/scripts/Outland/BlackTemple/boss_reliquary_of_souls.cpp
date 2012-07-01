@@ -137,7 +137,6 @@ struct boss_reliquary_of_soulsAI : public ScriptedAI
 
     uint32 SoulCount;
     uint32 SoulDeathCount;
-	uint32 KillingTimer;
 
     void Reset()
     {
@@ -154,7 +153,6 @@ struct boss_reliquary_of_soulsAI : public ScriptedAI
         }
 
         Phase = 0;
-		KillingTimer = 0;
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
@@ -188,15 +186,10 @@ struct boss_reliquary_of_soulsAI : public ScriptedAI
         return true;
     }
 
-    void JustDied(Unit* killer)
+    void JustDied(Unit* /*killer*/)
     {
         if (pInstance)
             pInstance->SetData(DATA_RELIQUARYOFSOULSEVENT, DONE);
-			
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
     }
 
     void UpdateAI(const uint32 diff)
@@ -209,8 +202,6 @@ struct boss_reliquary_of_soulsAI : public ScriptedAI
             EnterEvadeMode();
             return;
         }
-		
-		KillingTimer += diff;
 
         Creature* Essence = NULL;
         if (EssenceGUID)

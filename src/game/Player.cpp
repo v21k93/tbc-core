@@ -283,6 +283,7 @@ Player::Player (WorldSession *session): Unit()
     m_usedTalentCount = 0;
 
     m_regenTimer = 0;
+	m_combatTimer = 0;
     m_weaponChangeTimer = 0;
 
     m_zoneUpdateId = 0;
@@ -1195,6 +1196,12 @@ void Player::Update(uint32 p_time)
         else
             m_regenTimer -= p_time;
     }
+	
+	if (isInCombat())
+		m_combatTimer += p_time;
+	else
+		if(m_combatTimer != 0)
+			m_combatTimer = 0;
 
     if (m_weaponChangeTimer > 0)
     {
@@ -14052,12 +14059,11 @@ void Player::KilledMonster(CreatureInfo const* cInfo, uint64 guid)
 {
     if (cInfo->Entry)
         KilledMonsterCredit(cInfo->Entry,guid);
-		
-	/*if (cInfo->rank == 3)
+	
+	if (cInfo->rank == 3)
 	{
-		char* gender = (getGender()==0) ? "his" : "her";
-		sWorld.SendWorldText(LANG_PVE_ANNOUNCE_COLOR, GetName(), gender, cInfo->Name);
-	}*/
+		PveAnnouncer(GetName(), getGender(), cInfo->Name, m_combatTimer);
+	}
 	
     for (uint8 i = 0; i < MAX_KILL_CREDIT; ++i)
         if (cInfo->KillCredit[i])

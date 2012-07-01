@@ -96,7 +96,6 @@ struct boss_shahrazAI : public ScriptedAI
     uint32 SaberTimer;
     uint32 RandomYellTimer;
     uint32 EnrageTimer;
-	uint32 KillingTimer;
 
     bool Enraged;
 
@@ -117,7 +116,6 @@ struct boss_shahrazAI : public ScriptedAI
         SaberTimer = 5000;
         RandomYellTimer = 70000 + rand()%41 * 1000;
         EnrageTimer = 600000;
-		KillingTimer = 0;
 
         Enraged = false;
     }
@@ -138,15 +136,10 @@ struct boss_shahrazAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
         if (pInstance)
             pInstance->SetData(DATA_MOTHERSHAHRAZEVENT, DONE);
-		
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
 
         DoScriptText(SAY_DEATH, me);
     }
@@ -181,8 +174,6 @@ struct boss_shahrazAI : public ScriptedAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (((me->GetHealth()*100 / me->GetMaxHealth()) < 10) && !Enraged)
         {

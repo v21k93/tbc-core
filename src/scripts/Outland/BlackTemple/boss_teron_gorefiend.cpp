@@ -201,7 +201,6 @@ struct boss_teron_gorefiendAI : public ScriptedAI
     uint32 SummonShadowsTimer;
     uint32 RandomYellTimer;
     uint32 AggroTimer;
-	uint32 KillingTimer;
 
     uint64 AggroTargetGUID;
     uint64 GhostGUID;                                       // Player that gets killed by Shadow of Death and gets turned into a ghost
@@ -219,7 +218,6 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         CrushingShadowsTimer = 22000;
         SummonShadowsTimer = 60000;
         RandomYellTimer = 50000;
-		KillingTimer = 0;
 
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         // Start off unattackable so that the intro is done properly
@@ -268,15 +266,10 @@ struct boss_teron_gorefiendAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
         if (pInstance)
             pInstance->SetData(DATA_TERONGOREFIENDEVENT, DONE);
-			
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
 
         DoScriptText(SAY_DEATH, me);
     }
@@ -387,8 +380,6 @@ struct boss_teron_gorefiendAI : public ScriptedAI
 
         if (!UpdateVictim() || Intro)
             return;
-			
-		KillingTimer += diff;
 
         if (SummonShadowsTimer <= diff)
         {

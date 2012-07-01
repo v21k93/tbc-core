@@ -96,8 +96,6 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
     uint32 EnrageTimer;
 
     uint32 Charge_Timer;
-	
-	uint32 KillingTimer;
 
     bool Phase1;
 
@@ -126,8 +124,6 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         Phase1 = true;
 
         Charge_Timer = 30000;
-		
-		KillingTimer = 0;
 
         DoCast(me,SPELL_ACIDIC_WOUND,true);
 
@@ -148,13 +144,8 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
         DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         if (pInstance)
             pInstance->SetData(DATA_GURTOGGBLOODBOILEVENT, DONE);
 
@@ -224,8 +215,6 @@ struct boss_gurtogg_bloodboilAI : public ScriptedAI
                 }
             } else EnrageTimer -= diff;
         }
-		
-		KillingTimer += diff;
 
         if (ArcingSmashTimer <= diff)
         {

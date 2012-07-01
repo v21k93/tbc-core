@@ -467,7 +467,6 @@ struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
     uint32 AuraTimer;
     uint32 BlessingTimer;
     uint32 JudgeTimer;
-	uint32 KillingTimer;
 
     void Reset()
     {
@@ -477,7 +476,6 @@ struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
         AuraTimer = 90000;
         BlessingTimer = 60000;
         JudgeTimer = 45000;
-		KillingTimer = 0;
     }
 
     void KilledUnit(Unit * /*victim*/)
@@ -485,13 +483,8 @@ struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
         DoScriptText(SAY_GATH_SLAY, me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         DoScriptText(SAY_GATH_DEATH, me);
     }
 
@@ -528,8 +521,6 @@ struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (BlessingTimer <= diff)
         {
@@ -626,7 +617,6 @@ struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
     uint32 ArcaneBoltTimer;
     uint32 DampenMagicTimer;
     uint32 ArcaneExplosionTimer;
-	uint32 KillingTimer;
 
     void Reset()
     {
@@ -635,7 +625,6 @@ struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
         ArcaneBoltTimer = 500;
         DampenMagicTimer = 200;
         ArcaneExplosionTimer = 14000;
-		KillingTimer = 0;
     }
 
     void KilledUnit(Unit * /*victim*/)
@@ -643,13 +632,8 @@ struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
         DoScriptText(SAY_ZERE_SLAY, me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         DoScriptText(SAY_ZERE_DEATH, me);
     }
 
@@ -657,8 +641,6 @@ struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (DampenMagicTimer <= diff)
         {
@@ -727,7 +709,6 @@ struct boss_lady_malandeAI : public boss_illidari_councilAI
     uint32 CircleOfHealingTimer;
     uint32 DivineWrathTimer;
     uint32 ReflectiveShieldTimer;
-	uint32 KillingTimer;
 
     void Reset()
     {
@@ -735,7 +716,6 @@ struct boss_lady_malandeAI : public boss_illidari_councilAI
         CircleOfHealingTimer = 20000;
         DivineWrathTimer = 40000;
         ReflectiveShieldTimer = 15000;
-		KillingTimer = 0;
     }
 
     void KilledUnit(Unit * /*victim*/)
@@ -743,13 +723,8 @@ struct boss_lady_malandeAI : public boss_illidari_councilAI
         DoScriptText(SAY_MALA_SLAY, me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         DoScriptText(SAY_MALA_DEATH, me);
     }
 
@@ -757,8 +732,6 @@ struct boss_lady_malandeAI : public boss_illidari_councilAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (EmpoweredSmiteTimer <= diff)
         {
@@ -804,7 +777,6 @@ struct boss_veras_darkshadowAI : public boss_illidari_councilAI
     uint32 VanishTimer;
     uint32 AppearEnvenomTimer;
     uint32 EnvenomTimer;
-	uint32 KillingTimer;
 
     bool HasVanished;
 
@@ -815,7 +787,6 @@ struct boss_veras_darkshadowAI : public boss_illidari_councilAI
         DeadlyPoisonTimer = 20000;
         VanishTimer = 10000;
         EnvenomTimer = 3000;
-		KillingTimer = 0;
 
         HasVanished = false;
         me->SetVisibility(VISIBILITY_ON);
@@ -839,13 +810,8 @@ struct boss_veras_darkshadowAI : public boss_illidari_councilAI
         DoScriptText(SAY_VERA_SLAY, me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         DoScriptText(SAY_VERA_DEATH, me);
     }
 
@@ -853,8 +819,6 @@ struct boss_veras_darkshadowAI : public boss_illidari_councilAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (!me->HasAura(SPELL_VANISH,0))
         {

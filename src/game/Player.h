@@ -2282,6 +2282,7 @@ class Player : public Unit, public GridObject<Player>
         time_t m_lastDailyQuestTime;
 
         uint32 m_regenTimer;
+		uint32 m_combatTimer;
         uint32 m_drunkTimer;
         uint16 m_drunk;
         uint32 m_weaponChangeTimer;

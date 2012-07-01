@@ -69,8 +69,6 @@ struct boss_najentusAI : public ScriptedAI
     uint32 SpecialYellTimer;
     uint32 TidalShieldTimer;
     uint32 ImpalingSpineTimer;
-	uint32 KillingTimer;
-	
 
     uint64 SpineTargetGUID;
 
@@ -79,7 +77,6 @@ struct boss_najentusAI : public ScriptedAI
         EnrageTimer = 480000;
         SpecialYellTimer = 45000 + (rand()%76)*1000;
         TidalShieldTimer = 60000;
-		KillingTimer = 0;
 
         ResetTimer();
 
@@ -96,16 +93,11 @@ struct boss_najentusAI : public ScriptedAI
         DoScriptText(rand()%2 ? SAY_SLAY1 : SAY_SLAY2, me);
     }
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*victim*/)
     {
         if (pInstance)
             pInstance->SetData(DATA_HIGHWARLORDNAJENTUSEVENT, DONE);
 
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         DoScriptText(SAY_DEATH, me);
         DeleteSpine();
     }
@@ -181,8 +173,6 @@ struct boss_najentusAI : public ScriptedAI
     {
         if (!UpdateVictim())
             return;
-			
-		KillingTimer += diff;
 
         if (TidalShieldTimer <= diff)
         {

@@ -176,8 +176,8 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         pInstance = c->GetInstanceData();
         AkamaGUID = pInstance ? pInstance->GetData64(DATA_AKAMA_SHADE) : 0;
         me->setActive(true);//if view distance is too low
-		me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
-        me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
+        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
+        me->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, true);
     }
 
     ScriptedInstance* pInstance;
@@ -193,7 +193,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
     uint32 SummonTimer;
     uint32 ResetTimer;
     uint32 DefenderTimer;                                   // They are on a flat 15 second timer, independant of the other summon creature timer.
-	uint32 KillingTimer;
 
     bool IsBanished;
     bool HasKilledAkama;
@@ -230,7 +229,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
         ReduceHealthTimer = 0;
         ResetTimer = 60000;
         DefenderTimer = 15000;
-		KillingTimer = 0;
 
         IsBanished = true;
         HasKilledAkama = false;
@@ -249,13 +247,8 @@ struct boss_shade_of_akamaAI : public ScriptedAI
 
         me->setActive(true);
     }
-    void JustDied(Unit* killer)
+    void JustDied(Unit* /*killer*/)
     {
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
-		
         summons.DespawnAll();
     }
     void JustSummoned(Creature *summon)
@@ -408,8 +401,6 @@ struct boss_shade_of_akamaAI : public ScriptedAI
     {
         if (!StartCombat)
             return;
-			
-		KillingTimer += diff;
 
         if (IsBanished)
         {

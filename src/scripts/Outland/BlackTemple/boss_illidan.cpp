@@ -391,8 +391,6 @@ struct boss_illidan_stormrageAI : public ScriptedAI
     uint64 MaievGUID;
     uint64 FlameGUID[2];
     uint64 GlaiveGUID[2];
-	
-	uint32 KillingTimer;
 
     SummonList Summons;
 
@@ -451,17 +449,12 @@ struct boss_illidan_stormrageAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit *) {}
 
-    void JustDied(Unit * killer)
+    void JustDied(Unit * /*killer*/)
     {
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         if (!pInstance)
             return;
-			
-		if (killer->GetTypeId() == TYPEID_PLAYER)
-		{
-			PveAnnouncer(killer->GetName(), killer->getGender(), me->GetName(), KillingTimer);
-		}
 
         pInstance->SetData(DATA_ILLIDANSTORMRAGEEVENT, DONE); // Completed
 
@@ -705,8 +698,6 @@ struct boss_illidan_stormrageAI : public ScriptedAI
     {
         if ((!UpdateVictim()) && Phase < PHASE_TALK_SEQUENCE)
             return;
-			
-		KillingTimer += diff;
 
         Event = EVENT_NULL;
         for (uint32 i = 1; i <= MaxTimer[Phase]; ++i)
@@ -1865,7 +1856,6 @@ void boss_illidan_stormrageAI::Reset()
     TalkCount = 0;
     FlightCount = 0;
     TransformCount = 0;
-	KillingTimer = 0;
 
     me->SetDisplayId(21135);
     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
