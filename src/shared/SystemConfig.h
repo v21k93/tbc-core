@@ -26,7 +26,7 @@
 #include "revision.h"
 
 
-#define _PACKAGENAME "OregonCore "
+#define _PACKAGENAME "CheerCore "
 #define _CODENAME "VELOCITY"
 
 #if OREGON_ENDIAN == OREGON_BIGENDIAN
