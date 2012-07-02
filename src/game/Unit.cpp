@@ -68,6 +68,58 @@ float baseMoveSpeed[MAX_MOVE_TYPE] =
     4.5f,                  // MOVE_FLIGHT_BACK
 };
 
+enum eRanks
+{
+		/* Alliance */
+		PRIVATE = 1,
+        CORPORAL = 2,
+        SERGEANT = 3,
+        MASTER_SERGEANT = 4,
+        SERGEANT_MAJOR = 5,
+        KNIGHT = 6,
+        KNIGHT_LIEUTENANT = 7,
+        KNIGHT_CAPTAIN = 8,
+        KNIGHT_CHAMPION = 9,
+        LIEUTENANT_COMMANDER = 10,
+        COMMANDER = 11,
+        MARSHAL = 12,
+        FIELD_MARSHAL = 13,
+        GRAND_MARSHAL = 14,
+		/* Horde */
+		SCOUT = 15,
+        GRUNT = 16,
+        SERGEANT_H = 17,
+        SENIOR_SERGEANT = 18,
+        FIRST_SERGEANT = 19,
+        STONE_GUARD = 20,
+        BLOOD_GUARD = 21,
+        LEGIONNAIRE = 22,
+        CENTURION = 23,
+        CHAMPION = 24,
+        LIEUTENANT_GENERAL = 25,
+        GENERAL = 26,
+        WARLORD = 27,
+        HIGH_WARLORD = 28
+};
+ 
+enum eKills
+{
+        KILLS_1 = 100,
+        KILLS_2 = 500,
+        KILLS_3 = 1000,
+        KILLS_4 = 2000,
+        KILLS_5 = 4000,
+        KILLS_6 = 5000,
+        KILLS_7 = 6000,
+        KILLS_8 = 8000,
+        KILLS_9 = 10000,
+        KILLS_10 = 15000,
+        KILLS_11 = 25000,
+        KILLS_12 = 40000,
+        KILLS_13 = 45000,
+        KILLS_14 = 50000
+};
+
 void InitTriggerAuraData();
 
 // auraTypes contains attacker auras capable of proc'ing cast auras
@@ -724,6 +776,60 @@ void Unit::RemoveSpellbyDamageTaken(uint32 damage, uint32 spell)
     }
 }
 
+bool Unit::GiveTitles(Player *killer)
+{
+	if(!killer)
+		return false;
+		
+	switch(killer->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS))
+	{
+		case KILLS_1:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(PRIVATE)) : killer->SetTitle(sCharTitlesStore.LookupEntry(SCOUT));
+			break;
+		case KILLS_2:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(CORPORAL)) : killer->SetTitle(sCharTitlesStore.LookupEntry(GRUNT));
+			break;
+		case KILLS_3:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(SERGEANT)) : killer->SetTitle(sCharTitlesStore.LookupEntry(SERGEANT_H));
+			break;
+		case KILLS_4:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(MASTER_SERGEANT)) : killer->SetTitle(sCharTitlesStore.LookupEntry(SENIOR_SERGEANT));
+			break;
+		case KILLS_5:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(SERGEANT_MAJOR)) : killer->SetTitle(sCharTitlesStore.LookupEntry(FIRST_SERGEANT));
+			break;
+		case KILLS_6:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(KNIGHT)) : killer->SetTitle(sCharTitlesStore.LookupEntry(STONE_GUARD));
+			break;
+		case KILLS_7:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(KNIGHT_LIEUTENANT)) : killer->SetTitle(sCharTitlesStore.LookupEntry(BLOOD_GUARD));
+			break;
+		case KILLS_8:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(KNIGHT_CAPTAIN)) : killer->SetTitle(sCharTitlesStore.LookupEntry(LEGIONNAIRE));
+			break;
+		case KILLS_9:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(KNIGHT_CHAMPION)) : killer->SetTitle(sCharTitlesStore.LookupEntry(CENTURION));
+			break;
+		case KILLS_10:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(LIEUTENANT_COMMANDER)) : killer->SetTitle(sCharTitlesStore.LookupEntry(CHAMPION));
+			break;
+		case KILLS_11:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(COMMANDER)) : killer->SetTitle(sCharTitlesStore.LookupEntry(LIEUTENANT_GENERAL));
+			break;
+		case KILLS_12:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(MARSHAL)) : killer->SetTitle(sCharTitlesStore.LookupEntry(GENERAL));
+			break;
+		case KILLS_13:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(FIELD_MARSHAL)) : killer->SetTitle(sCharTitlesStore.LookupEntry(WARLORD));
+			break;
+		case KILLS_14:
+			killer->GetTeam() == ALLIANCE ? killer->SetTitle(sCharTitlesStore.LookupEntry(GRAND_MARSHAL)) : killer->SetTitle(sCharTitlesStore.LookupEntry(HIGH_WARLORD));
+			break;
+	}
+	
+	return true;
+}
+
 uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellEntry const *spellProto, bool durabilityLoss)
 {
     if (!pVictim->isAlive() || pVictim->isInFlight() || pVictim->GetTypeId() == TYPEID_UNIT && pVictim->ToCreature()->IsInEvadeMode())
@@ -897,6 +1003,7 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
             Player *killer = ToPlayer();
             Player *killed = pVictim->ToPlayer();
             sScriptMgr.OnPVPKill(killer, killed);
+			GiveTitles(killer);
         }
     }
     else                                                    // if (health <= damage)
@@ -12321,14 +12428,5 @@ void CharmInfo::SetIsReturning(bool val)
 bool CharmInfo::IsReturning()
 {
     return m_isReturning;
-}
-
-bool PveAnnouncer(char const* PlayerName, uint8 PlayerGender, char const* BossName, uint32 KillingTimer)
-{
-	char* gender = (PlayerGender==0) ? "his" : "her";
-	std::string str = secsToTimeString(KillingTimer/1000);
-	sWorld.SendWorldText(LANG_PVE_ANNOUNCE_COLOR, PlayerName, gender, BossName, str.c_str());
-	
-	return true;
 }
 

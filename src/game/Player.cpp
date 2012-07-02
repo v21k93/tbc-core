@@ -14062,7 +14062,8 @@ void Player::KilledMonster(CreatureInfo const* cInfo, uint64 guid)
 	
 	if (cInfo->rank == 3)
 	{
-		PveAnnouncer(GetName(), getGender(), cInfo->Name, m_combatTimer);
+		std::string str = secsToTimeString(m_combatTimer/1000);
+		sWorld.SendWorldText(LANG_PVE_ANNOUNCE_COLOR, GetName(), getGender()==0 ? "his" : "her", cInfo->Name, str.c_str());
 	}
 	
     for (uint8 i = 0; i < MAX_KILL_CREDIT; ++i)
