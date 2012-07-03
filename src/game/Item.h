@@ -295,8 +295,8 @@ class Item : public Object
 
         void BuildUpdate(UpdateDataMapType& );
 		
-		uint32 FakeOwner; // custom
 		uint32 FakeEntry; // custom
+		uint32 FakeOwner; // custom
 
     private:
         uint8 m_slot;
