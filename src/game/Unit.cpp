@@ -781,6 +781,9 @@ bool Unit::GiveTitles(Player *killer)
 	if(!killer)
 		return false;
 		
+	if(killer->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS)<100)
+		return false;
+		
 	switch(killer->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS))
 	{
 		case KILLS_1:
