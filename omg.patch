@@ -1,0 +1,388 @@
+diff --git a/sql/custom/world_spectators.sql b/sql/custom/world_spectators.sql
+new file mode 100644
+index 0000000..59ecc60
++++ b/sql/custom/world_spectators.sql
+@@ -0,0 +1,11 @@
++DELETE FROM `trinity_string` WHERE `entry` BETWEEN '11610' AND '11615';
++INSERT INTO `trinity_string` (`entry`, `content_default`, `content_loc8`) VALUES
++('11610', 'Player %s forbided you to watch his arena match.', 'Игрок %s не желает чтобы Вы были зрителем его боя на арене.'),
++('11611', 'Player %s is not a member of arena match.', 'Игрок %s не на арене.'),
++('11612', 'You should not be a member of arena or battleground match.', 'Вы не можете стать зрителем, находясь на поле боя или арене.'),
++('11613', 'You already have a spectator state.', 'Вы уже являетесь зрителем.'),
++('11614', 'Arena spectators system disabled.', 'Система зрителей на арене отключена.'),
++('11615', 'You cannot use chat while you are a spectator.', 'Находясь в режиме зрителя, вы не можете пользоваться чатом.');
++
++DELETE FROM `command ` WHERE `name` = 'spectate player';
++INSERT INTO `command` VALUES ('spectate player', '0', 'Syntax: .spectate player $player\r\n\r\nMakes you a spectator of arena match with $player');
+diff --git a/src/server/game/Battlegrounds/Battleground.cpp b/src/server/game/Battlegrounds/Battleground.cpp
+index b1b7a29..a846e24 100755
+--- a/src/server/game/Battlegrounds/Battleground.cpp
++++ b/src/server/game/Battlegrounds/Battleground.cpp
+@@ -847,6 +847,18 @@ void Battleground::EndBattleground(uint32 winner)
+ 
+     if (winmsg_id)
+         SendMessageToAll(winmsg_id, CHAT_MSG_BG_SYSTEM_NEUTRAL);
++
++    // teleport spectators to recall position and remove spectator state
++    Map::PlayerList const &PlList = m_Map->GetPlayers();
++
++    if (!PlList.isEmpty())
++        for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
++            if (Player* pPlayer = i->getSource())
++                if (pPlayer->IsSpectator())
++                {
++                    pPlayer->SetSpectator(false);
++                    pPlayer->TeleportTo(pPlayer->m_recallMap, pPlayer->m_recallX, pPlayer->m_recallY, pPlayer->m_recallZ, pPlayer->m_recallO);
++                }
+ }
+ 
+ uint32 Battleground::GetBonusHonorFromKill(uint32 kills) const
+diff --git a/src/server/game/Chat/Commands/Level0.cpp b/src/server/game/Chat/Commands/Level0.cpp
+index c8c5c1f..2873c18 100755
+--- a/src/server/game/Chat/Commands/Level0.cpp
++++ b/src/server/game/Chat/Commands/Level0.cpp
+@@ -79,9 +79,9 @@ bool ChatHandler::HandleStartCommand(const char* /*args*/)
+ 
+     if ((chr->isDead()) || (chr->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
+     {
+-    // if player is dead and stuck, send ghost to graveyard
+-    chr->RepopAtGraveyard();
+-    return true;
++        // if player is dead and stuck, send ghost to graveyard
++        chr->RepopAtGraveyard();
++        return true;
+     }
+ 
+     // cast spell Stuck
+diff --git a/src/server/game/Entities/Object/Object.cpp b/src/server/game/Entities/Object/Object.cpp
+index 3456447..2217652 100755
+--- a/src/server/game/Entities/Object/Object.cpp
++++ b/src/server/game/Entities/Object/Object.cpp
+@@ -1645,6 +1645,10 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
+     if (canSeeAlways(obj))
+         return true;
+ 
++    if (ToPlayer())
++        if (ToPlayer()->IsSpectator() && GetMap()->IsBattleArena() && ToPlayer()->HasAura(8326)) // Prevent exploits
++            return true;
++
+     bool corpseCheck = false;
+     bool corpseVisibility = false;
+     if (distanceCheck)
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+index f2d7217..72431a8 100644
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -17249,6 +17249,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
+ 
+     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
+ 
++    SetSpectator(false);
++
+     return true;
+ }
+ 
+@@ -25226,3 +25228,21 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
+         trans->Append(stmt);
+     }
+ }
++
++void Player::SetSpectator(bool bSpectator)
++{
++    if (bSpectator)
++    {
++        if (IsSpectator())
++        {
++            sLog->outError("Player::SetSpectator: trying to set spectator state for player (GUID: %u) but he already has this state.", GetGUIDLow());
++            return;
++        }
++        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(8326))
++            Aura::TryCreate(spellInfo, MAX_EFFECT_MASK, this, this);
++    }
++    else
++        RemoveAurasDueToSpell(8326);
++
++    m_spectator = bSpectator;
++}
+diff --git a/src/server/game/Entities/Player/Player.h b/src/server/game/Entities/Player/Player.h
+index 9e73716..9a11bce 100755
+--- a/src/server/game/Entities/Player/Player.h
++++ b/src/server/game/Entities/Player/Player.h
+@@ -2528,6 +2528,9 @@ class Player : public Unit, public GridObject<Player>
+         float GetAverageItemLevel();
+         bool isDebugAreaTriggers;
+ 
++        bool IsSpectator() const { return m_spectator; }
++        void SetSpectator(bool bSpectator);
++
+     protected:
+         uint32 m_regenTimerCount;
+         float m_powerFraction[MAX_POWERS];
+@@ -2850,6 +2853,8 @@ class Player : public Unit, public GridObject<Player>
+         InstanceTimeMap _instanceResetTimes;
+         InstanceSave* _pendingBind;
+         uint32 _pendingBindTimer;
++
++        bool m_spectator; // sets to true when player uses '.spectate' command
+ };
+ 
+ void AddItemsSetItem(Player*player, Item *item);
+diff --git a/src/server/game/Miscellaneous/Language.h b/src/server/game/Miscellaneous/Language.h
+index b940f6e..dd69195 100755
+--- a/src/server/game/Miscellaneous/Language.h
++++ b/src/server/game/Miscellaneous/Language.h
+@@ -1114,6 +1114,12 @@ enum TrinityStrings
+     LANG_CHATSPY_TOTAL                      = 11607,
+     LANG_CHATSPY_ONESPYSANOTHER             = 11608,
+     LANG_CHATSPY_MODE_CHANGED               = 11609,
++    LANG_SPEC_FORBID                        = 11610,
++    LANG_SPEC_NOT_ON_ARENA                  = 11611,
++    LANG_SPEC_ON_ARENA_OR_BG                = 11612,
++    LANG_SPEC_ALREADY_SPECTATOR             = 11613,
++    LANG_SPEC_DISABLED                      = 11614,
++    LANG_SPEC_CAN_NOT_CHAT                  = 11615,
+ 
+     // NOT RESERVED IDS                   12000-1999999999
+     // `db_script_string` table index     2000000000-2000009999 (MIN_DB_SCRIPT_STRING_ID-MAX_DB_SCRIPT_STRING_ID)
+diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+index 3bb42a9..63149da 100755
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -68,6 +68,7 @@ void AddSC_tele_commandscript();
+ void AddSC_titles_commandscript();
+ void AddSC_wp_commandscript();
+ void AddSC_gps_commandscript();
++void AddSC_spectate_commandscript();
+ 
+ #ifdef SCRIPTS
+ //world
+@@ -678,6 +679,7 @@ void AddCommandScripts()
+     AddSC_titles_commandscript();
+     AddSC_wp_commandscript();
+     AddSC_gps_commandscript();
++    AddSC_spectate_commandscript();
+ }
+ 
+ void AddWorldScripts()
+diff --git a/src/server/game/Server/Protocol/Handlers/ChatHandler.cpp b/src/server/game/Server/Protocol/Handlers/ChatHandler.cpp
+index 12d0e0c..9809230 100755
+--- a/src/server/game/Server/Protocol/Handlers/ChatHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/ChatHandler.cpp
+@@ -75,6 +75,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
+         sLog->outError("CHAT: Wrong message type received: %u", type);
+         return;
+     }
++    
++    if (_player->IsSpectator())
++    {
++        SendNotification(LANG_SPEC_CAN_NOT_CHAT);
++        return;
++    }
+ 
+     //sLog->outDebug("CHAT: packet received. type %u, lang %u", type, lang);
+ 
+diff --git a/src/server/game/World/World.cpp b/src/server/game/World/World.cpp
+index 0a1a50d..2c9811d 100755
+--- a/src/server/game/World/World.cpp
++++ b/src/server/game/World/World.cpp
+@@ -664,7 +664,7 @@ void World::LoadConfigSettings(bool reload)
+     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_AUCTION] = sConfig->GetBoolDefault("AllowTwoSide.Interaction.Auction", false);
+     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_MAIL]    = sConfig->GetBoolDefault("AllowTwoSide.Interaction.Mail", false);
+     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_WHO_LIST]            = sConfig->GetBoolDefault("AllowTwoSide.WhoList", false);
+-    m_bool_configs[CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND]          = sConfig->GetBoolDefault("AllowTwoSide.AddFriend", false);
++    m_bool_configs[CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND]          = sConfig->GetBoolDefault("AllowTwoSide.AddFriend", true);
+     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_TRADE]               = sConfig->GetBoolDefault("AllowTwoSide.trade", false);
+     m_int_configs[CONFIG_STRICT_PLAYER_NAMES]                 = sConfig->GetIntDefault ("StrictPlayerNames",  0);
+     m_int_configs[CONFIG_STRICT_CHARTER_NAMES]                = sConfig->GetIntDefault ("StrictCharterNames", 0);
+@@ -1044,6 +1044,7 @@ void World::LoadConfigSettings(bool reload)
+     m_int_configs[CONFIG_ARENA_START_MATCHMAKER_RATING]              = sConfig->GetIntDefault ("Arena.ArenaStartMatchmakerRating", 1500);
+     m_bool_configs[CONFIG_ARENA_SEASON_IN_PROGRESS]                  = sConfig->GetBoolDefault("Arena.ArenaSeason.InProgress", true);
+     m_bool_configs[CONFIG_ARENA_LOG_EXTENDED_INFO]                   = sConfig->GetBoolDefault("ArenaLog.ExtendedInfo", false);
++    m_bool_configs[CONFIG_ARENA_SPECTATORS_ENABLE]                   = sConfig->GetBoolDefault("Arena.Spectators.Enable", false);
+ 
+     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfig->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
+ 
+diff --git a/src/server/game/World/World.h b/src/server/game/World/World.h
+index d3960f8..6743854 100644
+--- a/src/server/game/World/World.h
++++ b/src/server/game/World/World.h
+@@ -169,6 +169,7 @@ enum WorldBoolConfigs
+     CONFIG_BOOL_WARDEN_KICK,
+     CONFIG_ITEM_UNLINK_ENABLE,
+     CONFIG_CHARACTER_SEC_ENABLE,
++    CONFIG_ARENA_SPECTATORS_ENABLE,
+     BOOL_CONFIG_VALUE_COUNT
+ };
+ 
+diff --git a/src/server/scripts/Commands/CMakeLists.txt b/src/server/scripts/Commands/CMakeLists.txt
+index 21a65b5..d16fa1f 100644
+--- a/src/server/scripts/Commands/CMakeLists.txt
++++ b/src/server/scripts/Commands/CMakeLists.txt
+@@ -28,6 +28,7 @@ set(scripts_STAT_SRCS
+   Commands/cs_tele.cpp
+   Commands/cs_titles.cpp
+   Commands/cs_wp.cpp
++  Commands/cs_spectate.cpp
+ #  Commands/cs_character.cpp
+ #  Commands/cs_list.cpp
+ #  Commands/cs_lookup.cpp
+diff --git a/src/server/scripts/Commands/cs_spectate.cpp b/src/server/scripts/Commands/cs_spectate.cpp
+new file mode 100644
+index 0000000..f797d5a
++++ b/src/server/scripts/Commands/cs_spectate.cpp
+@@ -0,0 +1,125 @@
++/*
++ * Copyright (C) 2011 gmlt.A
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "ScriptMgr.h"
++#include "Chat.h"
++#include "SocialMgr.h"
++
++class spectate_commandscript : public CommandScript
++{
++public:
++    spectate_commandscript() : CommandScript("spectate_commandscript") { }
++
++    ChatCommand* GetCommands() const
++    {
++        static ChatCommand spectateCommandTable[] =
++        {
++            { "player",         SEC_PLAYER,         false, &HandleSpectatePlayerCommand,          "", NULL },
++            { NULL,             0,                  false, NULL,                                  "", NULL }
++        };
++
++        static ChatCommand commandTable[] =
++        {
++            { "spectate",       SEC_PLAYER,         false, NULL,                               "", spectateCommandTable},
++            { NULL,             0,                  false, NULL,                               "", NULL }
++        };
++
++        return commandTable;
++    }
++
++    static bool HandleSpectatePlayerCommand(ChatHandler* handler, const char* args)
++    {
++        if (!sWorld->getBoolConfig(CONFIG_ARENA_SPECTATORS_ENABLE))
++        {
++            handler->SendSysMessage(LANG_SPEC_DISABLED);
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++        Player* target;
++        uint64 target_guid;
++        std::string target_name;
++        if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
++            return false;
++
++        Player* _player = handler->GetSession()->GetPlayer();
++        if (target == _player || target_guid == _player->GetGUID())
++        {
++            handler->SendSysMessage(LANG_CANT_TELEPORT_SELF);
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++        if (_player->IsSpectator())
++        {
++            handler->SendSysMessage(LANG_SPEC_ALREADY_SPECTATOR);
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++        if (_player->GetMap()->IsBattlegroundOrArena())
++        {
++            handler->SendSysMessage(LANG_SPEC_ON_ARENA_OR_BG);
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        if (target)
++        {
++            std::string chrNameLink = handler->playerLink(target_name);
++
++            if (!target->InArena())
++            {
++                handler->PSendSysMessage(LANG_SPEC_NOT_ON_ARENA, chrNameLink.c_str());
++                handler->SetSentErrorMessage(true);
++                return false;
++            }
++            if (!target->GetSocial()->HasFriend(_player->GetGUIDLow()))
++            {
++                handler->PSendSysMessage(LANG_SPEC_FORBID, chrNameLink.c_str());
++                handler->SetSentErrorMessage(true);
++                return false;
++            }
++            if (_player->isInFlight())
++            {
++                handler->SendSysMessage(LANG_YOU_IN_FLIGHT);
++                handler->SetSentErrorMessage(true);
++                return false;
++            }
++            // save only in non-flight case
++            else
++                _player->SaveRecallPosition();
++
++            _player->SetBattlegroundId(target->GetBattlegroundId(), target->GetBattlegroundTypeId());
++            _player->SetBattlegroundEntryPoint();
++
++            handler->PSendSysMessage(LANG_APPEARING_AT, chrNameLink.c_str());
++
++            // to point to see at target with same orientation
++            float x, y, z;
++            target->GetContactPoint(_player, x, y, z);
++
++            _player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target));
++            _player->SetSpectator(true);
++            _player->SetPhaseMask(target->GetPhaseMask(), true);
++        }
++
++        return true;
++    }
++};
++
++void AddSC_spectate_commandscript()
++{
++    new spectate_commandscript();
++}
+diff --git a/src/server/worldserver/worldserver.conf.dist b/src/server/worldserver/worldserver.conf.dist
+index 9b5ea54..bc73ed2 100644
+--- a/src/server/worldserver/worldserver.conf.dist
++++ b/src/server/worldserver/worldserver.conf.dist
+@@ -1490,8 +1490,8 @@ AllowTwoSide.WhoList = 0
+ #
+ #    AllowTwoSide.AddFriend
+ #        Description: Allow adding friends from other faction the friends list.
+-#        Default:     0 - (Disabled)
+-#                     1 - (Enabled)
++#        Default:     1 - (Enabled)
++#                     0 - (Disabled)
+ 
+ AllowTwoSide.AddFriend = 0
+ 
+@@ -1513,6 +1513,14 @@ AllowTwoSide.Trade = 0
+ TalentsInspecting = 1
+ 
+ #
++#    Arena.Spectators.Enable
++#        Description: Arena spectators system state.
++#        Default:     0 - (Disabled)
++#                     1 - (Enabled)
++
++Arena.Spectators.Enable = 0
++
++#
+ ###################################################################################################
+ 
+ ###################################################################################################
