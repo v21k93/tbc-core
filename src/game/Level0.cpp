@@ -86,6 +86,7 @@ bool ChatHandler::HandleStartCommand(const char* /*args*/)
     return true;
 }
 
+<<<<<<< HEAD
 bool ChatHandler::HandleXpRateCommand(const char* args)
 {
     Player *chr = m_session->GetPlayer();
@@ -115,6 +116,8 @@ bool ChatHandler::HandleXpRateCommand(const char* args)
     return true;
 }
 
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 {
     uint32 activeClientsNum = sWorld.GetActiveSessionCount();

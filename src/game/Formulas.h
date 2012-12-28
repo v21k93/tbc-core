@@ -100,7 +100,11 @@ namespace Oregon
             }
         }
 
+<<<<<<< HEAD
         inline uint32 Gain(Player *pl, Unit *u, uint32 xpRate)
+=======
+        inline uint32 Gain(Player *pl, Unit *u)
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         {
             if (u->GetTypeId() == TYPEID_UNIT && (
                 ((Creature*)u)->isTotem() || ((Creature*)u)->isPet() ||
@@ -114,7 +118,11 @@ namespace Oregon
             if (u->GetTypeId() == TYPEID_UNIT && ((Creature*)u)->isElite())
                 xp_gain *= 2;
 
+<<<<<<< HEAD
             return (uint32)(xp_gain*xpRate);
+=======
+            return (uint32)(xp_gain*sWorld.getRate(RATE_XP_KILL));
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         }
 
         inline uint32 xp_Diff(uint32 lvl)

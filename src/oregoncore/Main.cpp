@@ -76,7 +76,10 @@ void usage(const char *prog)
 // Launch the oregon server
 extern int main(int argc, char **argv)
 {
+<<<<<<< HEAD
 	system("color 1B");
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
     // Command line parsing
     char const* cfg_file = _OREGON_CORE_CONFIG;
 

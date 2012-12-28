@@ -109,7 +109,10 @@ class ChatHandler
         bool HandleAHBotOptionsCommand(const char * args);
         bool HandleCommandsCommand(const char* args);
         bool HandleStartCommand(const char* args);
+<<<<<<< HEAD
 		bool HandleXpRateCommand(const char* args);
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         bool HandleDismountCommand(const char* args);
         bool HandleSaveCommand(const char* args);
         bool HandleGMListIngameCommand(const char* args);

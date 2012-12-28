@@ -28,7 +28,10 @@
 
 //custom
 void AddSC_NPC_Transmogrify();
+<<<<<<< HEAD
 void AddSC_NPC_Barber();
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
 //world
 void AddSC_areatrigger_scripts();
@@ -403,7 +406,10 @@ void AddScripts()
 
 	//custom
 	AddSC_NPC_Transmogrify();
+<<<<<<< HEAD
 	AddSC_NPC_Barber();
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 	
     AddSC_areatrigger_scripts();
     AddSC_boss_emeriss();

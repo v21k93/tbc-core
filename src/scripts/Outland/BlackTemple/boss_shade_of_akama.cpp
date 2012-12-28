@@ -608,7 +608,10 @@ struct npc_akamaAI : public ScriptedAI
             // Prevent players from trying to restart event
             me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             CAST_AI(boss_shade_of_akamaAI, Shade->AI())->SetAkamaGUID(me->GetGUID());
+<<<<<<< HEAD
 			CAST_AI(boss_shade_of_akamaAI, Shade->AI())->FindChannelers();
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
             CAST_AI(boss_shade_of_akamaAI, Shade->AI())->SetSelectableChannelers();
             CAST_AI(boss_shade_of_akamaAI, Shade->AI())->StartCombat = true;
             Shade->AddThreat(me, 1000000.0f);

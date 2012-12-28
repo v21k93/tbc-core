@@ -76,7 +76,11 @@ bool LoginQueryHolder::Initialize()
         "arenaPoints, totalHonorPoints, todayHonorPoints, "
         "yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, "
         "chosenTitle, watchedFaction, drunk, health, "
+<<<<<<< HEAD
         "powerMana, powerRage, powerFocus, powerEnergy, powerHappiness, instance_id, xp_rate "
+=======
+        "powerMana, powerRage, powerFocus, powerEnergy, powerHappiness, instance_id "
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         "FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADGROUP,           "SELECT leaderGuid FROM group_member WHERE memberGuid ='%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES,  "SELECT id, permanent, map, difficulty, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid = '%u'", GUID_LOPART(m_guid));

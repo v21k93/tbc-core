@@ -1791,6 +1791,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     return true;
 }
 
+<<<<<<< HEAD
 bool Player::ChangeXPRate(uint32 xpRate)
 {
     m_xpRate = xpRate;
@@ -1798,6 +1799,8 @@ bool Player::ChangeXPRate(uint32 xpRate)
     return true;
 }
 
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 bool Player::TeleportToBGEntryPoint()
 {
     if (sWorld.getConfig(CONFIG_BATTLEGROUND_WRATH_LEAVE_MODE))
@@ -5718,7 +5721,11 @@ void Player::CheckAreaExploreAndOutdoor()
                 uint32 XP = 0;
                 if (diff < -5)
                 {
+<<<<<<< HEAD
                     XP = uint32(objmgr.GetBaseXP(getLevel()+5)*m_xpRate);
+=======
+                    XP = uint32(objmgr.GetBaseXP(getLevel()+5)*sWorld.getRate(RATE_XP_EXPLORE));
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
                 }
                 else if (diff > 5)
                 {
@@ -5728,11 +5735,19 @@ void Player::CheckAreaExploreAndOutdoor()
                     else if (exploration_percent < 0)
                         exploration_percent = 0;
 
+<<<<<<< HEAD
                     XP = uint32(objmgr.GetBaseXP(p->area_level)*exploration_percent/100*m_xpRate);
                 }
                 else
                 {
                     XP = uint32(objmgr.GetBaseXP(p->area_level)*m_xpRate);
+=======
+                    XP = uint32(objmgr.GetBaseXP(p->area_level)*exploration_percent/100*sWorld.getRate(RATE_XP_EXPLORE));
+                }
+                else
+                {
+                    XP = uint32(objmgr.GetBaseXP(p->area_level)*sWorld.getRate(RATE_XP_EXPLORE));
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
                 }
 
                 GiveXP(XP, NULL);
@@ -13362,7 +13377,11 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
     QuestStatusData& q_status = mQuestStatus[quest_id];
 
     // Not give XP in case already completed once repeatable quest
+<<<<<<< HEAD
     uint32 XP = q_status.m_rewarded ? 0 : uint32(pQuest->XPValue(this)*m_xpRate);
+=======
+    uint32 XP = q_status.m_rewarded ? 0 : uint32(pQuest->XPValue(this)*sWorld.getRate(RATE_XP_QUEST));
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
     if (getLevel() < sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
         GiveXP(XP , NULL);
@@ -14067,6 +14086,15 @@ void Player::KilledMonster(CreatureInfo const* cInfo, uint64 guid)
     if (cInfo->Entry)
         KilledMonsterCredit(cInfo->Entry,guid);
 	
+<<<<<<< HEAD
+=======
+	if (cInfo->rank == 3)
+	{
+		std::string str = secsToTimeString(m_combatTimer/1000);
+		sWorld.SendWorldText(LANG_PVE_ANNOUNCE_COLOR, GetName(), getGender()==0 ? "his" : "her", cInfo->Name, str.c_str());
+	}
+	
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
     for (uint8 i = 0; i < MAX_KILL_CREDIT; ++i)
         if (cInfo->KillCredit[i])
             KilledMonsterCredit(cInfo->KillCredit[i],guid);
@@ -14640,8 +14668,13 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     //"resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, dungeon_difficulty,"
     // 40           41                42                43                    44          45          46              47           48               49              50
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk,"
+<<<<<<< HEAD
     // 51      52         53         54          55           56             57			  58
     //"health, powerMana, powerRage, powerFocus, powerEnergy, powerHapiness, instance_id, xp_rate FROM characters WHERE guid = '%u'", guid);
+=======
+    // 51      52         53         54          55           56             57
+    //"health, powerMana, powerRage, powerFocus, powerEnergy, powerHapiness, instance_id FROM characters WHERE guid = '%u'", guid);
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
     QueryResult_AutoPtr result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
     if (!result)
@@ -14688,6 +14721,10 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     bytes0 |= fields[5].GetUInt8() << 8;                    // class
     bytes0 |= fields[6].GetUInt8() << 16;                   // gender
     SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[7].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[8].GetUInt32());
 
@@ -14730,7 +14767,10 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder *holder)
     Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
     uint32 mapId = fields[16].GetUInt32();
     uint32 instanceId = fields[56].GetFloat();
+<<<<<<< HEAD
 	m_xpRate = fields[57].GetFloat();
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
     SetDifficulty(fields[39].GetUInt32());                  // may be changed in _LoadGroup
     std::string taxi_nodes = fields[38].GetCppString();
@@ -19925,13 +19965,20 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
         {
             // PvP kills doesn't yield experience
             // also no XP gained if there is no member below gray level
+<<<<<<< HEAD
             xp = (PvP || !not_gray_member_with_max_level) ? 0 : Oregon::XP::Gain(not_gray_member_with_max_level, pVictim, m_xpRate);
+=======
+            xp = (PvP || !not_gray_member_with_max_level) ? 0 : Oregon::XP::Gain(not_gray_member_with_max_level, pVictim);
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
             // skip in check PvP case (for speed, not used)
             bool is_raid = PvP ? false : sMapStore.LookupEntry(GetMapId())->IsRaid() && pGroup->isRaidGroup();
             bool is_dungeon = PvP ? false : sMapStore.LookupEntry(GetMapId())->IsDungeon();
             float group_rate = Oregon::XP::xp_in_group_rate(count,is_raid);
+<<<<<<< HEAD
 			bool announce = true;
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
             for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
             {
@@ -19971,6 +20018,7 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
                     {
                         // normal creature (not pet/etc) can be only in !PvP case
                         if (pVictim->GetTypeId() == TYPEID_UNIT)
+<<<<<<< HEAD
 						{
                             pGroupGuy->KilledMonster(pVictim->ToCreature()->GetCreatureInfo(), pVictim->GetGUID());
 							if(announce)
@@ -19983,6 +20031,9 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
 								}
 							}
 						}
+=======
+                            pGroupGuy->KilledMonster(pVictim->ToCreature()->GetCreatureInfo(), pVictim->GetGUID());
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
                     }
                 }
             }
@@ -19990,7 +20041,11 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
     }
     else                                                    // if (!pGroup)
     {
+<<<<<<< HEAD
         xp = PvP ? 0 : Oregon::XP::Gain(this, pVictim, m_xpRate);
+=======
+        xp = PvP ? 0 : Oregon::XP::Gain(this, pVictim);
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
         // honor can be in PvP and !PvP (racial leader) cases
         RewardHonor(pVictim,1, -1, true);
@@ -20006,6 +20061,7 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
 
             // normal creature (not pet/etc) can be only in !PvP case
             if (pVictim->GetTypeId() == TYPEID_UNIT)
+<<<<<<< HEAD
 			{
                 KilledMonster(pVictim->ToCreature()->GetCreatureInfo(), pVictim->GetGUID());
 				if (pVictim->ToCreature()->GetCreatureInfo()->rank == 3)
@@ -20014,6 +20070,9 @@ void Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
 					sWorld.SendWorldText(LANG_PVE_ANNOUNCE_COLOR, GetName(), getGender()==0 ? "his" : "her", pVictim->ToCreature()->GetCreatureInfo()->Name, str.c_str());
 				}
 			}
+=======
+                KilledMonster(pVictim->ToCreature()->GetCreatureInfo(), pVictim->GetGUID());
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         }
     }
 }

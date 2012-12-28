@@ -876,8 +876,11 @@ class Player : public Unit, public GridObject<Player>
 
         bool TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options = 0);
 
+<<<<<<< HEAD
 		bool ChangeXPRate(uint32 xpRate);
 
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         bool TeleportTo(WorldLocation const &loc, uint32 options = 0)
         {
             return TeleportTo(loc.GetMapId(), loc.GetPositionX(), loc.GetPositionY(), loc.GetPositionZ(), loc.GetOrientation(), options);
@@ -2017,8 +2020,11 @@ class Player : public Unit, public GridObject<Player>
         float  m_recallO;
         void   SaveRecallPosition();
 
+<<<<<<< HEAD
 		uint32 m_xpRate;
 
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         // Homebind coordinates
         uint32 m_homebindMapId;
         uint16 m_homebindAreaId;

@@ -84,10 +84,13 @@ enum OregonStrings
     LANG_USING_WORLD_DB                 = 57,
     LANG_USING_SCRIPT_LIB               = 58,
     // Room for more level 0              59-99 not used
+<<<<<<< HEAD
 
 	//Custom XP Rate Command Erro
 	LANG_XP_SUCCESS						= 92,
 	LANG_XP_ERROR						= 93,
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 	
 	//PVE List
 	LANG_PVE_ANNOUNCE_COLOR				= 94,

@@ -9,8 +9,11 @@ DELETE FROM `oregon_string` WHERE (`entry`='6613');	/* GM Announce */
 DELETE FROM `oregon_string` WHERE (`entry`='6614');	/* GM Notify */
 DELETE FROM `oregon_string` WHERE (`entry`='6615');	/* GM Name Announce */
 DELETE FROM `oregon_string` WHERE (`entry`='11000');/* Auto Broadcast */
+<<<<<<< HEAD
 DELETE FROM `oregon_string` WHERE (`entry`='93');	/* Change Rate XP Error */
 DELETE FROM `oregon_string` WHERE (`entry`='92');	/* Change Rate XP Success */
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('3', '|cFF008080[|r|cFF4682B4Cheer-World|r|cFF008080]:|r |cFF90EE90%s|r');
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('96', '|    Account      |');
@@ -22,6 +25,10 @@ INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('787', '|cFF008
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('6613', '|cFF008080[|r|cFF4682B4GM Announcement|cFF008080]:|r |cFF90EE90%s|r');
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('6614', '|cFF008080[|r|cFF4682B4GM Notify|cFF008080]:|r |cFF90EE90%s|r');
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('6615', '|cFF008080[|r|cFF4682B4GM Announce by|r |cffff0000%s|cFF008080]:|r |cFF90EE90%s|r');
+<<<<<<< HEAD
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('11000', '|cFF008080[|r|cFF4682B4Cheer-World|r|cFF008080]:|r |cFF90EE90%s|r');
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('93', 'Your chosen XP Rate must be between 1 and 15 !');
 INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('92', 'Your XP Rate successfully changed to %u !');
+=======
+INSERT INTO `oregon_string` (`entry`, `content_default`) VALUES ('11000', '|cFF008080[|r|cFF4682B4Cheer-World|r|cFF008080]:|r |cFF90EE90%s|r');
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc

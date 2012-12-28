@@ -637,7 +637,10 @@ ChatCommand * ChatHandler::getCommandTable()
         { "unban",          SEC_ADMINISTRATOR,  true,  NULL,                                           "", unbanCommandTable },
         { "baninfo",        SEC_ADMINISTRATOR,  false, NULL,                                           "", baninfoCommandTable },
         { "banlist",        SEC_ADMINISTRATOR,  true,  NULL,                                           "", banlistCommandTable },
+<<<<<<< HEAD
 		{ "xprate",			SEC_PLAYER,			false, &ChatHandler::HandleXpRateCommand,			   "", NULL },
+=======
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
         { "start",          SEC_PLAYER,         false, &ChatHandler::HandleStartCommand,               "", NULL },
         { "taxicheat",      SEC_MODERATOR,      false, &ChatHandler::HandleTaxiCheatCommand,           "", NULL },
         { "allowmove",      SEC_ADMINISTRATOR,  false, &ChatHandler::HandleAllowMovementCommand,       "", NULL },

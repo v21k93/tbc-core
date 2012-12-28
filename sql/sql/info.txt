@@ -16,7 +16,14 @@
 	* Artifact: x15 
 	* Items: x15
 	* Money: x15
+<<<<<<< HEAD
 - Rates for XP: You can choose your own XP Rate anywhere, any time by typing in-game command ".xprate <rate>" (<rate> must be between 1 and 15)
+=======
+- Rates for XP:
+	* Kill: x15
+	* Quest: x25
+	* Explore: x20
+>>>>>>> 3392afbf1533fbd6720058e84083b0fb3e5a39bc
 - Rates for Reputation: x15
 - Skills Gain (Crafting, Defense, Gathering, Weapon): x2
 - Skill Chance:
